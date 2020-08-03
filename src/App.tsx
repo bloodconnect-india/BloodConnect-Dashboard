@@ -1,24 +1,62 @@
 import React from 'react';
-import logo from './logo.svg';
+import { FiUser } from 'react-icons/fi'
 import './App.css';
+import Search from './components/Search/Search';
+import CityChart from './components/Chart/CityChart'
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container">
+      <Search />
+      <div className="row">
+        <div className="col-lg-3">
+          <div className="stat-card ">
+            <div>
+              <p className="card-heading"> Total Volunteer</p>
+              <p className="stat">158</p>
+            </div>
+            <div className="stat-icon-container">
+              <FiUser size={34} />
+            </div>
+          </div>
+        </div>
+        <div className="col-lg-3">
+          <div className="stat-card ">
+            <div>
+              <p className="card-heading"> Active Volunteer</p>
+              <p className="stat">158</p>
+            </div>
+            <div className="stat-icon-container">
+              <FiUser size={34} />
+            </div>
+          </div>
+        </div>
+        <div className="col-lg-3">
+          <div className="stat-card ">
+            <div>
+              <p className="card-heading"> Inactive Volunteer</p>
+              <p className="stat">158</p>
+            </div>
+            <div className="stat-icon-container">
+              <FiUser size={34} />
+            </div>
+          </div>
+        </div>
+        <div className="col-lg-3">
+          <div className="stat-card ">
+            <div>
+              <p className="card-heading"> Total Volunteer</p>
+              <p className="stat">158</p>
+            </div>
+            <div className="stat-icon-container">
+              <FiUser size={34} />
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <CityChart />
+
     </div>
   );
 }
