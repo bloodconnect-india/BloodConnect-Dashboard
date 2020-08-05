@@ -7,6 +7,8 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    cursor: pointer;
+    margin: 20px auto;
 }
 .card-heading{
     font-size: 18px;

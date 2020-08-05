@@ -1,5 +1,5 @@
-.search-input {
-    width: 500px;
+input {
+    width: 100%;
     padding: 10px 20px;
     border-radius: 25px;
     border: none;
@@ -8,6 +8,7 @@
 .search-icon {
     position: relative;
     left: -40px;
+    top: 5px;
     background: #000;
     width: 35px;
     height: 35px;
