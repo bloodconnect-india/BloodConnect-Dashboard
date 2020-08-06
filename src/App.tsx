@@ -5,6 +5,7 @@ import Search from './components/Search/Search';
 import CityChart from './components/Chart/CityChart';
 import { useQuery } from '@apollo/client';
 import { STATS_QUERY, ALL_STAT } from './query';
+import { get } from './services/index'
 import Lottie from 'react-lottie';
 import MonthlyChart from './components/Chart/MonthlyChart';
 import { OverallStat } from './components/schema';
@@ -51,6 +52,7 @@ const App = () => {
   const [monthlyAwarenessData, setmonthlyAwarenessData] = useState(Array(12).fill(0))
   const [aVUrl, setaVUrl] = useState(`${BASE_URL}/#Report:BloodConnect_Team_Report?Status=Active`)
 
+
   const setCityChartData = (d: OverallStat[]) => {
     d.forEach(da => {
       let i = citiesData.findIndex(c => c.city === da.city)
@@ -64,6 +66,7 @@ const App = () => {
   }
 
   useEffect(() => {
+    get()
     if (!loading && data && data.overallStat) {
       setLoading(false)
       setCityChartData(data.overallStat)
