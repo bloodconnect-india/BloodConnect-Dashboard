@@ -4,30 +4,30 @@ import './Chart.css'
 
 interface Props {
     data?:number[];
-    loading?:boolean
+    loading?:boolean;
+    handleClick: (i: number) => void
 }
 
 interface dataProps {
     month: number;
     donations: number;
     label: String;
-    url: String
 }
 
-const MonthlyChart = ({ data, loading }: Props) => {
+const MonthlyChart = ({ data, loading, handleClick }: Props) => {
     const initial_data = [
-        { month: 1, donations: 0, label: 'heya', url: 'https://anish-yadav.github.io' },
-        { month: 2, donations: 0, label: 'heya', url: 'https://anish-yadav.github.ioio' },
-        { month: 3, donations: 0, label: 'heya', url: 'https://anish-yadav.github.io' },
-        { month: 4, donations: 0, label: 'heya', url: 'https://anish-yadav.github.io' },
-        { month: 5, donations: 0, label: 'heya', url: 'https://anish-yadav.github.io' },
-        { month: 6, donations: 0, label: 'heya', url: 'https://anish-yadav.github.io' },
-        { month: 7, donations: 0, label: 'heya', url: 'https://anish-yadav.github.io' },
-        { month: 8, donations: 0, label: 'heya', url: 'https://anish-yadav.github.io' },
-        { month: 9, donations: 0, label: 'heya', url: 'https://anish-yadav.github.io' },
-        { month: 10, donations: 0, label: 'heya', url: 'https://anish-yadav.github.io' },
-        { month: 11, donations: 0, label: 'heya', url: 'https://anish-yadav.github.io' },
-        { month: 12, donations: 0, label: 'heya', url: 'https://anish-yadav.github.ioio' },
+        { month: 1, donations: 0, label: '0' },
+        { month: 2, donations: 0, label: '0' },
+        { month: 3, donations: 0, label: '0' },
+        { month: 4, donations: 0, label: '0' },
+        { month: 5, donations: 0, label: '0' },
+        { month: 6, donations: 0, label: '0' },
+        { month: 7, donations: 0, label: '0' },
+        { month: 8, donations: 0, label: '0' },
+        { month: 9, donations: 0, label: '0' },
+        { month: 10, donations: 0, label: '0' },
+        { month: 11, donations: 0, label: '0' },
+        { month: 12, donations: 0, label: '0' },
     ];
 
     const [chartData, setData] = useState<dataProps[]>(initial_data)
@@ -80,6 +80,7 @@ const MonthlyChart = ({ data, loading }: Props) => {
                                     target: "data",
                                     mutation: (props) => {
                                         console.log(props.data[props.index].url)
+                                        handleClick(props.data[props.index].month - 1)
                                         return true
                                     }
                                 }];

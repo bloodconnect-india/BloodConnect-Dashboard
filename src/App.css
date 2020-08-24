@@ -11,12 +11,10 @@
     margin: 20px auto;
 }
 .card-heading{
-    font-size: 18px;
-    font-weight: 600;
+    font-size: 16px;
 }
 .stat{
     font-size: 24px;
-    font-weight: bold;
 }
 .stat-icon-container{
     display: flex;

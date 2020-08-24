@@ -57,10 +57,17 @@ export default function Search({ handleChange }: Props): ReactElement {
         setValue(newValue)
     };
 
+    const handleKeyDown = (e) => {
+        if(e.key === 'Enter') {
+            handleChange(e.target.value)
+        }
+    }
+
     const inputProps = {
         placeholder: 'Enter the city',
         value,
-        onChange: onChange
+        onChange: onChange,
+        onKeyDown: handleKeyDown
     };
     return (
         <div className="my-4 col-lg-6">
@@ -74,6 +81,7 @@ export default function Search({ handleChange }: Props): ReactElement {
                     inputProps={inputProps}
                     theme={theme}
                 />
+                
                 <div className="search-icon" onClick={() => {
                     console.log(value)
                     handleChange(value)

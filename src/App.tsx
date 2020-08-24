@@ -1,43 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import { FiUser } from 'react-icons/fi';
+import { FiUser, FiCalendar, FiUsers } from 'react-icons/fi';
 import './App.css';
 import Search from './components/Search/Search';
-import CityChart from './components/Chart/CityChart';
-import { useQuery } from '@apollo/client';
-import { STATS_QUERY, ALL_STAT } from './query';
-import { get } from './services/index'
+//import { useQuery } from '@apollo/client';
+//import { STATS_QUERY, ALL_STAT } from './query';
+import { fetchVolunteer, fetchCamps } from './services/index'
 import Lottie from 'react-lottie';
 import MonthlyChart from './components/Chart/MonthlyChart';
-import { OverallStat } from './components/schema';
+// import { OverallStat } from './components/schema';
 import MonthlyEventChart from './components/Chart/MonthlyEventChart';
+import CampDonationChart from './components/Chart/CampDonationChart';
 
+interface Citystat {
+  [key: string]: number
+}
+interface MonthStat {
+  city: string;
+  donations: number;
+  label: string;
+  date: string
+}
 const App = () => {
 
 
   let BASE_URL = 'https://app.zohocreator.in/deepak64/bloodconnect-india-donor-system'
-  if (!window.location.href.includes('localhost')) {
-    BASE_URL = window.location.origin + window.location.pathname
+  if (window.location.ancestorOrigins && !window.location.ancestorOrigins[0].includes('localhost')) {
+    BASE_URL = window.location.ancestorOrigins[0]
   }
 
-  let citiesData = [
-    { city: 'Delhi NCR', donations: 0, label: 0 },
-    { city: 'Agra', donations: 0, label: 0 },
-    { city: 'Lucknow', donations: 0, label: 0 },
-    { city: 'Jaipur', donations: 0, label: 0 },
-    { city: 'Kolkata', donations: 0, label: 0 },
-    { city: 'Ranchi', donations: 0, label: 0 },
-    { city: 'Odisha', donations: 0, label: 0 },
-    { city: 'Varanasi', donations: 0, label: 0 },
-    { city: 'Pune', donations: 0, label: 0 },
-    { city: 'Kanpur', donations: 0, label: 0 },
-    { city: 'Consulting', donations: 0, label: 0 }
-  ]
+
 
   const [city, setCity] = useState('All')
-  //const { data, loading } = useQuery(STATS_QUERY, { variables: { city } })
-  const [cd, setCitiesData] = useState(citiesData)
-  const { data, loading } = useQuery(ALL_STAT)
   const [isLoading, setLoading] = useState(true)
+  const [ isMonthStat, showMonthStat ] = useState(false)
+  const [monthStat, setMonthStat] = useState<MonthStat[]>([])
   const [aV, setAV] = useState(-1)
   const [camps, setCamps] = useState(-1)
   const [awareness, setAwareness] = useState(-1)
@@ -48,39 +44,52 @@ const App = () => {
   const [monthlyData, setmonthlyData] = useState(Array(12).fill(0))
   // Camp data
   const [monthlyCampData, setmonthlyCampData] = useState(Array(12).fill(0))
+  const [ monthCampDetail, setMonthCampDetail ] = useState<any>()
   // Awareness data
   const [monthlyAwarenessData, setmonthlyAwarenessData] = useState(Array(12).fill(0))
   const [aVUrl, setaVUrl] = useState(`${BASE_URL}/#Report:BloodConnect_Team_Report?Status=Active`)
+  const [campUrl, setcampUrl] = useState(`${BASE_URL}/#Report:Camp_Awareness_Report?TypeOfEvent=Camp&Date_field_op=52`)
+  const [awarenessUrl, setawarenessUrl] = useState(`${BASE_URL}/#Report:Camp_Awareness_Report?TypeOfEvent=Awareness&Date_field_op=52`)
 
 
-  const setCityChartData = (d: OverallStat[]) => {
-    d.forEach(da => {
-      let i = citiesData.findIndex(c => c.city === da.city)
-      if (i < 0)
-        return
-      citiesData[i].donations = da.stat.donations
-      citiesData[i].label = da.stat.donations
-    })
 
-    setCitiesData(citiesData)
+
+
+
+  const loadAV = async () => {
+    const av = await fetchVolunteer(city)
+    setAV(av)
+  }
+  const loadCamps = async () => {
+    const { camps, awareness, monthCampData, monthAwarnessData, donations, monthDetail, monthDonation } = await fetchCamps(city)
+    
+    setMonthCampDetail(monthDetail)
+    setCamps(camps)
+    setAwareness(awareness)
+    setDonations(donations)
+    setmonthlyCampData(monthCampData)
+    setmonthlyAwarenessData(monthAwarnessData)
+    setmonthlyData(monthDonation)
   }
 
+  const loadAllData = () => {
+    loadAV().then(() => {
+      loadCamps().then(() => {
+          setLoading(false)
+      })
+    })
+  }
   useEffect(() => {
-    get()
-    if (!loading && data && data.overallStat) {
-      setLoading(false)
-      setCityChartData(data.overallStat)
-      let curr = data.overallStat.find((a: OverallStat) => a.city === city)
-      //console.log(curr)
-      setAV(curr.stat.activeVolunteer)
-      setCamps(curr.stat.camps)
-      setAwareness(curr.stat.awareness)
-      setDonations(curr.stat.donations)
-      setmonthlyData(curr.stat.monthwiseDonation)
-      setmonthlyCampData(curr.stat.monthCampData)
-      setmonthlyAwarenessData(curr.stat.monthAwarnessData)
-    }
-  }, [data, loading, city])
+    loadAllData()
+  }, [city])
+
+ 
+
+
+
+  // useEffect(() => {
+  //     loadCityStat()
+  // }, [])
   const setSearch = (c: string): void => {
     if (c !== city) {
       setLoading(true)
@@ -89,9 +98,23 @@ const App = () => {
 
   }
 
+  const setMonth = (i: number): void => {
+    if(monthCampDetail &&  monthCampDetail[i])
+      setMonthStat(monthCampDetail[i])
+    else 
+      setMonthCampDetail([{city:'null',date:'12-07-2012',donations: 20}])
+    showMonthStat(true)
+  }
+
+  const hideMonthStat = (): void => {
+    showMonthStat(false)
+  }
   useEffect(() => {
-    if (city !== 'All')
-      setaVUrl(`${BASE_URL}/#Report:BloodConnect_Team_Report?Status=Active&&BloodConnect_City=${city}`)
+    if (city !== 'All'){
+      setaVUrl(`${BASE_URL}/#Report:BloodConnect_Team_Report?Status=Active&BloodConnect_City=${city}`)
+      setcampUrl(`${BASE_URL}/#Report:Camp_Awareness_Report?TypeOfEvent=Camp&BloodConnect_City=${city}&Date_field_op=52`)
+      setawarenessUrl(`${BASE_URL}/#Report:Camp_Awareness_Report?TypeOfEvent=Awareness&BloodConnect_City=${city}&Date_field_op=52`)
+    }
   }, [BASE_URL, city])
 
   const Loading = () => {
@@ -99,7 +122,7 @@ const App = () => {
       <div>
         <Lottie
           options={{
-            animationData: require('./assets/animation/loading.json'),
+            animationData: require('./assets/animation/dot.json'),
             loop: true,
             autoplay: true
           }}
@@ -122,7 +145,7 @@ const App = () => {
             window.open(aVUrl, '_blank')
           }}>
             {
-              aV >= 0 && !isLoading ?
+              !isLoading ?
                 <div>
                   <p className="card-heading"> Active Volunteer</p>
                   <p className="display-4">{aV}</p>
@@ -136,9 +159,11 @@ const App = () => {
         </div>
 
         <div className="col-lg-3">
-          <div className="stat-card ">
+          <div className="stat-card " onClick={() => {
+            window.open(campUrl, '_blank')
+          }}>
             {
-              camps >= 0 && !isLoading ?
+              !isLoading ?
                 <div>
                   <p className="card-heading"> Camps</p>
                   <p className="display-4">{camps}</p>
@@ -146,15 +171,17 @@ const App = () => {
                 : <Loading />
             }
             <div className="stat-icon-container">
-              <FiUser size={34} />
+              <FiCalendar size={34} />
             </div>
           </div>
         </div>
 
         <div className="col-lg-3">
-          <div className="stat-card ">
+          <div className="stat-card " onClick={() => {
+            window.open(awarenessUrl, '_blank')
+          }}>
             {
-              awareness >= 0 && !isLoading ?
+              !isLoading ?
                 <div>
                   <p className="card-heading"> Awareness</p>
                   <p className="display-4">{awareness}</p>
@@ -162,7 +189,7 @@ const App = () => {
                 : <Loading />
             }
             <div className="stat-icon-container">
-              <FiUser size={34} />
+              <FiCalendar size={34} />
             </div>
           </div>
         </div>
@@ -170,7 +197,7 @@ const App = () => {
         <div className="col-lg-3">
           <div className="stat-card ">
             {
-              donations >= 0 && !isLoading ?
+              !isLoading ?
                 <div>
                   <p className="card-heading"> Toatal Donation </p>
                   <p className="display-4">{donations}</p>
@@ -178,18 +205,18 @@ const App = () => {
                 : <Loading />
             }
             <div className="stat-icon-container">
-              <FiUser size={34} />
+              <FiUsers size={34} />
             </div>
           </div>
         </div>
 
       </div>
+      
       {
-        city === 'All' ?
-          <CityChart data={cd} setSearch={setSearch} />
-          : <></>
+        isMonthStat ? 
+        <CampDonationChart data={monthStat} loading={isMonthStat} back={hideMonthStat} />
+        : <MonthlyChart data={monthlyData} loading={isLoading} handleClick={setMonth} />
       }
-      <MonthlyChart data={monthlyData} loading={isLoading} />
       <MonthlyEventChart camp={monthlyCampData} awareness={monthlyAwarenessData} />
     </div>
   );

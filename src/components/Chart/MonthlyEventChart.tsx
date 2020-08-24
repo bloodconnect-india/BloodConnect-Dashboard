@@ -65,7 +65,6 @@ export default function MonthlyEventChart({ camp, awareness }: Props): ReactElem
 
     useEffect(() => {
         if (awareness) {
-            console.log('Awarenss is', awareness)
             setAwarenessData((d: GraphData[]) => {
                 return d.map(da => {
                     da.count = awareness[da.month - 1]
