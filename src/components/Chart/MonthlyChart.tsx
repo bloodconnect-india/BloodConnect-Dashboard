@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { VictoryBar, VictoryChart, VictoryAxis, VictoryTheme, VictoryLabel } from 'victory'
+import html2canvas from 'html2canvas'
+import { jsPDF } from 'jspdf'
 import './Chart.css'
 
 interface Props {
@@ -32,6 +34,21 @@ const MonthlyChart = ({ data, loading, handleClick }: Props) => {
 
     const [chartData, setData] = useState<dataProps[]>(initial_data)
 
+    const downloadChart = () => {
+        const input = document.getElementById('chart');
+        
+        
+    html2canvas(input!)
+      .then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF();
+        pdf.addImage(imgData,'JPEG',0,0,100,200);
+        // pdf.output('dataurlnewwindow');
+        pdf.save("download.pdf");
+      })
+    ;
+    }
+
     useEffect(() => {
         if(!loading && data) {
             setData((d:dataProps[]) => {
@@ -45,8 +62,10 @@ const MonthlyChart = ({ data, loading, handleClick }: Props) => {
     },[loading, data])
 
     return (
-        <div className="container chart-container my-4">
+        <div id="chart" className="container chart-container my-4">
+            <button className="mx-2" onClick={() => downloadChart()}>Download Chart</button>
             <VictoryChart
+
                 theme={VictoryTheme.material}
                 width={800}
                 height={400}

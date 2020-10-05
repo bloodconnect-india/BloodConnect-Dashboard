@@ -13,7 +13,9 @@
     "@types/react-dom": "^16.9.0",
     "bootstrap": "^4.5.1",
     "graphql": "^15.3.0",
+    "html2canvas": "^1.0.0-rc.7",
     "jquery": "^3.5.1",
+    "jspdf": "^2.1.1",
     "react": "^16.13.1",
     "react-autocomplete": "^1.8.1",
     "react-autosuggest": "^10.0.2",
@@ -24,6 +26,7 @@
     "react-scripts": "3.4.1",
     "typescript": "~3.7.2",
     "victory": "^35.0.8",
+    "zet": "^1.1.0",
     "zoho-extension-toolkit": "^0.25.0"
   },
   "scripts": {
