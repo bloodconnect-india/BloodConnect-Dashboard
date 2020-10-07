@@ -59,7 +59,7 @@ const HelplineComponent = ({ searchedCity }: Props) => {
       <div className="row">
         <div className="col-lg-3">
           <div className="stat-card ">
-            {!isLoading || helpline > 0 ? (
+            {!isLoading  ? (
               <div>
                 <p className="card-heading"> Total Requests</p>
                 <p className="display-4">{helpline}</p>
@@ -91,7 +91,7 @@ const HelplineComponent = ({ searchedCity }: Props) => {
 
         <div className="col-lg-3">
           <div className="stat-card ">
-            {!isLoading || closedHelpline > 0 ? (
+            {!isLoading  ? (
               <div>
                 <p className="card-heading"> Closed</p>
                 <p className="display-4">{closedHelpline}</p>

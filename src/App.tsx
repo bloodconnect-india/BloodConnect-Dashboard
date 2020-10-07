@@ -1,26 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { FiUser, FiCalendar, FiUsers } from "react-icons/fi";
-import "./App.css";
-import Search from "./components/Search/Search";
-//import { useQuery } from '@apollo/client';
-//import { STATS_QUERY, ALL_STAT } from './query';
-import { fetchVolunteer, fetchCamps, fecthHelplines } from "./services/index";
+import React, { useEffect, useState } from "react";
+import { FiCalendar, FiUser, FiUsers } from "react-icons/fi";
 import Lottie from "react-lottie";
-import MonthlyChart from "./components/Chart/MonthlyChart";
-// import { OverallStat } from './components/schema';
+import "./App.css";
+import DonationCharts from "./components/Chart/MonthlyDonation";
 import MonthlyEventChart from "./components/Chart/MonthlyEventChart";
-import CampDonationChart from "./components/Chart/CampDonationChart";
 import HelplineComponent from "./components/Helpline";
+import Search from "./components/Search/Search";
+import { fetchCamps, fetchVolunteer } from "./services/index";
 
-interface Citystat {
-  [key: string]: number;
-}
-interface MonthStat {
-  city: string;
-  donations: number;
-  label: string;
-  date: string;
-}
 const App = () => {
   let BASE_URL =
     "https://app.zohocreator.in/deepak64/bloodconnect-india-donor-system";
@@ -35,8 +22,6 @@ const App = () => {
 
   const [city, setCity] = useState("All");
   const [isLoading, setLoading] = useState(true);
-  const [isMonthStat, showMonthStat] = useState(false);
-  const [monthStat, setMonthStat] = useState<MonthStat[]>([]);
   const [aV, setAV] = useState(-1);
   const [camps, setCamps] = useState(-1);
   const [awareness, setAwareness] = useState(-1);
@@ -44,10 +29,8 @@ const App = () => {
 
   // Monthly Datas
   // Donations data
-  const [monthlyData, setmonthlyData] = useState(Array(12).fill(0));
   // Camp data
   const [monthlyCampData, setmonthlyCampData] = useState(Array(12).fill(0));
-  const [monthCampDetail, setMonthCampDetail] = useState<any>();
   // Awareness data
   const [monthlyAwarenessData, setmonthlyAwarenessData] = useState(
     Array(12).fill(0)
@@ -73,17 +56,13 @@ const App = () => {
       monthCampData,
       monthAwarnessData,
       donations,
-      monthDetail,
-      monthDonation,
     } = await fetchCamps(city);
 
-    setMonthCampDetail(monthDetail);
     setCamps(camps);
     setAwareness(awareness);
     setDonations(donations);
     setmonthlyCampData(monthCampData);
     setmonthlyAwarenessData(monthAwarnessData);
-    setmonthlyData(monthDonation);
     
   };
 
@@ -108,16 +87,7 @@ const App = () => {
     }
   };
 
-  const setMonth = (i: number): void => {
-    if (monthCampDetail && monthCampDetail[i]) setMonthStat(monthCampDetail[i]);
-    else
-      setMonthCampDetail([{ city: "null", date: "12-07-2012", donations: 20 }]);
-    showMonthStat(true);
-  };
 
-  const hideMonthStat = (): void => {
-    showMonthStat(false);
-  };
   useEffect(() => {
     if (city !== "All") {
       setaVUrl(
@@ -238,19 +208,7 @@ const App = () => {
       </div>
 
       <HelplineComponent searchedCity={city} />
-      {isMonthStat ? (
-        <CampDonationChart
-          data={monthStat}
-          loading={isMonthStat}
-          back={hideMonthStat}
-        />
-      ) : (
-        <MonthlyChart
-          data={monthlyData}
-          loading={isLoading}
-          handleClick={setMonth}
-        />
-      )}
+      <DonationCharts selectedCity={city} />
       <MonthlyEventChart
         camp={monthlyCampData}
         awareness={monthlyAwarenessData}

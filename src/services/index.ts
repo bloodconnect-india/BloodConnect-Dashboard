@@ -18,6 +18,13 @@ interface PostCamp {
     display_value: string;
   };
 }
+
+interface MonthData {
+    city: string;
+    date: string;
+    donations: number;
+}
+
 const CREATOR = window.ZOHO.CREATOR;
 
 export const get = () => {
@@ -130,6 +137,7 @@ export const fetchVolunteer = async (city: string) => {
 };
 
 export const fetchCamps = async (city: string) => {
+  await CREATOR.init()
   let monthCampData = Array(12).fill(0);
   let monthAwarnessData = Array(12).fill(0);
   let monthDonation = Array(12).fill(0);
@@ -217,7 +225,6 @@ export const fecthHelplines = async (city: string) => {
   await CREATOR.init();
   if (city !== "All") {
     let res = await getCity(city);
-    console.log(res)
     city = res.data[0].ID;
   }
   let page = 1;
