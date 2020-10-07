@@ -1,0 +1,1 @@
+export const CITIES_ARRAY = [ "Agra","Consulting","Delhi NCR","Jaipur","Kanpur","Kolkata","Lucknow","Odisha","Pune","Ranchi","Varanasi"];

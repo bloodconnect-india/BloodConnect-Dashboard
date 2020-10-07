@@ -1,3 +1,8 @@
+import { CITIES_ARRAY } from "../Constans";
+import { TABLESTATSDEMO } from "../Constans/DemoData";
+import { sleep } from "../Helplers";
+import { TableStatsType } from "../Types";
+
 declare global {
   interface Window {
     ZOHO: any;
@@ -20,9 +25,9 @@ interface PostCamp {
 }
 
 interface MonthData {
-    city: string;
-    date: string;
-    donations: number;
+  city: string;
+  date: string;
+  donations: number;
 }
 
 const CREATOR = window.ZOHO.CREATOR;
@@ -137,7 +142,7 @@ export const fetchVolunteer = async (city: string) => {
 };
 
 export const fetchCamps = async (city: string) => {
-  await CREATOR.init()
+  await CREATOR.init();
   let monthCampData = Array(12).fill(0);
   let monthAwarnessData = Array(12).fill(0);
   let monthDonation = Array(12).fill(0);
@@ -249,4 +254,34 @@ export const fecthHelplines = async (city: string) => {
     ...returnData,
     total: total,
   };
+};
+
+// fetching stats for the table
+export const getTableStat = async (): Promise<TableStatsType[] | null> => {
+  const tableStat: TableStatsType[] = [];
+  try {
+  await CREATOR.init();
+    for (let i in CITIES_ARRAY) {
+      let city = CITIES_ARRAY[i]
+      let av = await fetchVolunteer(city);
+      let { camps, awareness, donations } = await fetchCamps(city);
+      let helpline = 0;
+      if(city !== "Consulting"){
+      let { total } = await fecthHelplines(city);
+        helpline = total
+      }
+      tableStat.push({
+        city,
+        camps,
+        awareness,
+        donations,
+        helpline: helpline,
+        activeVolunteer: av,
+      });
+    }
+  } catch (e) {
+    return null;
+  }
+  
+  return tableStat;
 };

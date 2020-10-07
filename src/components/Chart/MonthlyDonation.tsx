@@ -7,11 +7,10 @@ import {
   VictoryLabel,
   VictoryTooltip,
 } from "victory";
-import html2canvas from "html2canvas";
-import { jsPDF } from "jspdf";
 import "./Chart.css";
 import { fetchCamps } from "../../services";
 import { FiArrowLeft } from "react-icons/fi";
+import { exportComponentAsPDF } from 'react-component-export-image'
 
 interface Props {
   selectedCity: string;
@@ -46,7 +45,6 @@ const DonationCharts = ({ selectedCity }: Props) => {
     { month: 12, donations: 0, label: "0" },
   ];
 
-  const initial_month_data = [];
 
   const [chartData, setData] = useState<dataProps[]>(initial_data);
   const [city, setCity] = useState<string>(selectedCity);
@@ -57,16 +55,11 @@ const DonationCharts = ({ selectedCity }: Props) => {
   const [monthStat, setMonthStat] = useState<any>();
   const [currMonthStat, setCurrMonthStat] = useState<MonthData[]>();
 
-  const downloadChart = () => {
-    const input = document.getElementById("chart");
+  let ref = React.createRef<any>()
 
-    html2canvas(input!).then((canvas) => {
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF();
-      pdf.addImage(imgData, "JPEG", 0, 0, 100, 200);
-      // pdf.output('dataurlnewwindow');
-      pdf.save("download.pdf");
-    });
+  const downloadChart = () => {
+    
+    exportComponentAsPDF(ref)
   };
 
   const fetchYearData = async () => {
@@ -101,7 +94,7 @@ const DonationCharts = ({ selectedCity }: Props) => {
   return (
     <>
       {!monthStatShown ? (
-        <div id="chart" className="container chart-container my-4">
+        <div id="chart" ref={ref} className="container chart-container my-4" >
           <button className="mx-2" onClick={() => downloadChart()}>
             Download Chart
           </button>
@@ -218,7 +211,7 @@ useEffect(() => {
         domainPadding={100}
       >
         <VictoryLabel
-          text="Monthly Report"
+          text="Monthly Donations"
           x={225}
           y={30}
           textAnchor="middle"

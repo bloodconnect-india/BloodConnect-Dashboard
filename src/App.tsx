@@ -6,6 +6,7 @@ import DonationCharts from "./components/Chart/MonthlyDonation";
 import MonthlyEventChart from "./components/Chart/MonthlyEventChart";
 import HelplineComponent from "./components/Helpline";
 import Search from "./components/Search/Search";
+import StatTable from "./components/Table/StatTable";
 import { fetchCamps, fetchVolunteer } from "./services/index";
 
 const App = () => {
@@ -13,10 +14,11 @@ const App = () => {
     "https://app.zohocreator.in/deepak64/bloodconnect-india-donor-system";
   if (
     window.location.ancestorOrigins &&
+    window.location.ancestorOrigins[0] &&
     !window.location.ancestorOrigins[0].includes("localhost")
   ) {
-    console.log('origin url is',window.location.ancestorOrigins);
-    if(window.location.ancestorOrigins[0].includes("bloodconnect"))
+    console.log("origin url is", window.location.ancestorOrigins);
+    if (window.location.ancestorOrigins[0].includes("bloodconnect"))
       BASE_URL = window.location.ancestorOrigins[0];
   }
 
@@ -63,7 +65,6 @@ const App = () => {
     setDonations(donations);
     setmonthlyCampData(monthCampData);
     setmonthlyAwarenessData(monthAwarnessData);
-    
   };
 
   const loadAllData = () => {
@@ -87,7 +88,6 @@ const App = () => {
     }
   };
 
-
   useEffect(() => {
     if (city !== "All") {
       setaVUrl(
@@ -102,22 +102,6 @@ const App = () => {
     }
   }, [BASE_URL, city]);
 
-  const Loading = () => {
-    return (
-      <div>
-        <Lottie
-          options={{
-            animationData: require("./assets/animation/dot.json"),
-            loop: true,
-            autoplay: true,
-          }}
-          height={100}
-          width={100}
-          isStopped={!isLoading}
-        />
-      </div>
-    );
-  };
   return (
     <div className="container">
       <div className="row justify-content-between ">
@@ -140,7 +124,7 @@ const App = () => {
                 <p className="display-4">{aV}</p>
               </div>
             ) : (
-              <Loading />
+              <Loading loading={isLoading} />
             )}
             <div className="stat-icon-container">
               <FiUser size={34} />
@@ -161,7 +145,7 @@ const App = () => {
                 <p className="display-4">{camps}</p>
               </div>
             ) : (
-              <Loading />
+              <Loading loading={isLoading}/>
             )}
             <div className="stat-icon-container">
               <FiCalendar size={34} />
@@ -182,7 +166,7 @@ const App = () => {
                 <p className="display-4">{awareness}</p>
               </div>
             ) : (
-              <Loading />
+              <Loading loading={isLoading} />
             )}
             <div className="stat-icon-container">
               <FiCalendar size={34} />
@@ -198,7 +182,7 @@ const App = () => {
                 <p className="display-4">{donations}</p>
               </div>
             ) : (
-              <Loading />
+              <Loading loading={isLoading} />
             )}
             <div className="stat-icon-container">
               <FiUsers size={34} />
@@ -208,6 +192,7 @@ const App = () => {
       </div>
 
       <HelplineComponent searchedCity={city} />
+      <StatTable />
       <DonationCharts selectedCity={city} />
       <MonthlyEventChart
         camp={monthlyCampData}
@@ -217,4 +202,20 @@ const App = () => {
   );
 };
 
+export const Loading = ({loading}) => {
+  return (
+    <div>
+      <Lottie
+        options={{
+          animationData: require("./assets/animation/dot.json"),
+          loop: true,
+          autoplay: true,
+        }}
+        height={100}
+        width={100}
+        isStopped={!loading}
+      />
+    </div>
+  );
+};
 export default App;
