@@ -1,12 +1,14 @@
-import { CITIES_ARRAY, MONTH_END, __IS_DEV__ } from "../Constans";
+import { __IS_DEV__ } from "../Constans";
 import {
-    getDemoCampData,
-    getDemoHelplineData,
-    getDemoVolunteerData,
-    TABLESTATSDEMO,
+    getDemoHelplineData
 } from "../Constans/DemoData";
-import { getDateRange, sleep } from "../Helplers";
-import { TableStatsType } from "../Types";
+import {
+    CreatorResponse,
+
+    Event,
+
+    Helpline, Team
+} from "../Types";
 
 declare global {
     interface Window {
@@ -49,7 +51,6 @@ export const get = () => {
             //get all records API
             CREATOR.API.getAllRecords(config).then(function (response) {
                 //callback block
-                console.log(response);
             });
         })
         .catch((e) => {
@@ -57,15 +58,18 @@ export const get = () => {
         });
 };
 
-const getVolunteer = (page: number, city: string) => {
+const getVolunteer = (
+    page: number,
+    city: string
+): Promise<CreatorResponse<Team>> => {
     let criteria = '(Status=="Active")';
     if (city !== "All") {
         criteria = `(Status=="Active" && BloodConnect_City=="${city}")`;
     }
-    if (__IS_DEV__) {
-        if (city !== "All") return getDemoVolunteerData(city);
-        return getDemoVolunteerData();
-    }
+    // if (__IS_DEV__) {
+    //     if (city !== "All") return getDemoVolunteerData(city);
+    //     return getDemoVolunteerData();
+    // }
 
     let config = {
         reportName: "BloodConnect_Team_Report",
@@ -76,16 +80,19 @@ const getVolunteer = (page: number, city: string) => {
     return CREATOR.API.getAllRecords(config);
 };
 
-const getEvent = (page: number, city: string) => {
+const getEvent = (
+    page: number,
+    city: string
+): Promise<CreatorResponse<Event>> => {
     let criteria = "";
     if (city !== "All") {
         criteria = `(BloodConnect_City=="${city}")`;
     }
 
-    if (__IS_DEV__) {
-        if (city !== "All") return getDemoCampData(city);
-        return getDemoCampData();
-    }
+    // if (__IS_DEV__) {
+    //     if (city !== "All") return getDemoCampData(city);
+    //     return getDemoCampData();
+    // }
     let config = {
         reportName: "Camp_Awareness_Report",
         criteria,
@@ -105,7 +112,10 @@ const getCity = (city: string) => {
     return CREATOR.API.getAllRecords(config);
 };
 
-const getHelplines = (page: number, city: string) => {
+const getHelplines = (
+    page: number,
+    city: string
+): Promise<CreatorResponse<Helpline>> => {
     let criteria = "";
     if (city !== "All" && city !== "Consulting") {
         criteria = `(City_Region==${city})`;
@@ -145,198 +155,68 @@ const getPostCamp = (page: number, city: string): Promise<API<PostCamp>> => {
     //         reject({ code: 500, data: []})
     // })
 };
-export const fetchVolunteer = async (city: string) => {
-    if (!__IS_DEV__) await CREATOR.init();
+// fetching all data at once to make the api calls less
+export const fetchAllData = async (): Promise<{
+    events: Event[]| undefined;
+    activeVolunteers: Team[] | undefined;
+    helplines: Helpline[] | undefined;
+}> => {
+    await CREATOR.init();
+
+    let events: Event[] | undefined = [];
+    let activeVolunteers: Team[] | undefined = [];
+    let helplines: Helpline[] | undefined = [];
+    let len = 0;
     let page = 1;
-    let { data } = await getVolunteer(page++, city);
-    let l = data.length;
-    let total = l;
-    while (l === 200) {
-        let { data } = await getVolunteer(page++, city);
-        l = data.length;
-        total = total + l;
-    }
-    return total;
-};
-
-export const fetchCamps = async (
-    city: string,
-    startDate?: string,
-    endDate?: string
-) => {
-    if (!__IS_DEV__) await CREATOR.init();
-    // intializing data
-    let monthCampData = Array(12).fill(0); // no of camps in each month
-    let monthAwarnessData = Array(12).fill(0); // no of awareness each month
-    let monthDonation = Array(12).fill(0); // no of donations each month
-    let monthDetail = Array(12) // camps and their donation details each month
-        .fill(0)
-        .map(() => [{}]);
-
-    let donations = 0; // total donations till now
-    let page = 1;
-
-    // to return  data ; data has both camp and awareness data
-    let { data } = await getEvent(page++, city);
-    let l = data.length;
-
-    // filtering camps and awareness
-    let camps = data.filter((d) => d.TypeOfEvent === "Camp");
-    let awareness = data.filter((d) => d.TypeOfEvent !== "Camp");
-    let totalCamps = 0;
-    let totalAwareness = 0;
-
-    // add filter for the the date i.e. the date must be between start and end
-    camps.forEach((c) => {
-        let date = c.Date_field;
-        let [_, mon, year] = date.split("-");
-
-        //inseting data into monthCampData
-        if (parseInt(year) === new Date().getFullYear()) {
-            monthCampData[parseInt(mon) - 1] =
-                monthCampData[parseInt(mon) - 1] + 1;
-
-            if (c["Post_Camp_ID.Number_of_Donation"]) {
-                monthDonation[parseInt(mon) - 1] =
-                    monthDonation[parseInt(mon) - 1] +
-                    parseInt(c["Post_Camp_ID.Number_of_Donation"]);
-                donations =
-                    donations + parseInt(c["Post_Camp_ID.Number_of_Donation"]);
-            }
-
-            monthDetail[parseInt(mon) - 1].push({
-                city: c.BloodConnect_City,
-                date,
-                donations: c["Post_Camp_ID.Number_of_Donation"]
-                    ? c["Post_Camp_ID.Number_of_Donation"]
-                    : 0,
-            });
-
-            totalCamps++;
-        }
-    });
-
-    awareness.forEach((c) => {
-        let date = c.Date_field;
-        let [_, mon, year] = date.split("-");
-        if (parseInt(year) === new Date().getFullYear()) {
-            monthAwarnessData[parseInt(mon) - 1] =
-                monthAwarnessData[parseInt(mon) - 1] + 1;
-            totalAwareness++;
-        }
-    });
-
-    console.log(totalCamps, totalAwareness);
-    return {
-        camps: totalCamps,
-        awareness: totalAwareness,
-        monthCampData,
-        monthAwarnessData,
-        monthDonation,
-        monthDetail,
-        donations,
-    };
-};
-
-export const fetchPostCamp = async (city: string) => {
-    let monthData = Array(12).fill(0);
-    let donation = 0;
-    let d = await getPostCamp(0, city).then(
-        (res) => {
-            res.data.forEach((postCamp) => {
-                let date = postCamp.Camp_Awareness.display_value
-                    .split("_")
-                    .pop();
-                if (!date) return;
-                let [_, mon, year] = date.split("-");
-                if (parseInt(year) === new Date().getFullYear()) {
-                    monthData[parseInt(mon) - 1] =
-                        monthData[parseInt(mon) - 1] +
-                        parseInt(postCamp.Number_of_Donation);
-                    donation = donation + parseInt(postCamp.Number_of_Donation);
-                }
-            });
-        },
-        (error) => {
-            console.log("error", error, city);
-            donation = 0;
-        }
-    );
-
-    return { totalDonation: donation, monthData };
-};
-
-export const fecthHelplines = async (city: string) => {
-    if (!__IS_DEV__) await CREATOR.init();
-    if (city !== "All" && !__IS_DEV__) {
-        let res = await getCity(city);
-        city = res.data[0].ID;
-    }
-    let page = 1;
-    let returnData = {
-        open: 0,
-        closed: 0,
-    };
-    let { data }: { data: any[] } = await getHelplines(page++, city);
-    console.log(data);
-    let l = data.length;
-    returnData.open += data.filter((d) => d.Status === "Open").length;
-    returnData.closed += data.filter((d) => d.Status === "Closed").length;
-    let total = l;
-    while (l === 200) {
-        let { data } = await getHelplines(page++, city);
-        returnData.open += data.filter((d) => d.Status === "Open").length;
-        returnData.closed += data.filter((d) => d.Status === "Closed").length;
-        l = data.length;
-        total += l;
-    }
-    return {
-        ...returnData,
-        total: total,
-    };
-};
-
-// fetching stats for the table
-export const getTableStat = async (
-    month: number,
-    year: number
-): Promise<TableStatsType[] | null> => {
-    const tableStat: TableStatsType[] = [];
-
-    // start and end date for filter
-    const [startDate, endDate] = getDateRange(month, year);
-
-    // if in development send demo data
-
-    // this wont run in development
     try {
-        if (!__IS_DEV__) await CREATOR.init();
-        for (let i in CITIES_ARRAY) {
-            let city = CITIES_ARRAY[i];
-            // no filter for this
-            let av = await fetchVolunteer(city);
+        let { data } = await getEvent(page++, "All");
+        events.push(...data);
+        len = data.length;
 
-            // filter needed
-            let { camps, awareness, donations } = await fetchCamps(city);
-            let helpline = 0;
-
-            // filter needed and need to sort the criteria for consulting helplines
-
-            let { total } = await fecthHelplines(city);
-            helpline = total;
-            tableStat.push({
-                city,
-                camps,
-                awareness,
-                donations,
-                helpline: helpline,
-                activeVolunteer: av,
-            });
+        while (len === 200) {
+            let { data: data1 } = await getEvent(page++, "All");
+            events.push(...data1);
+            len = data1.length;
         }
     } catch (e) {
-        console.log(e);
-        return null;
+        console.log("Error in event fetching");
+    }
+    // getting volunteer data
+    page = 1;
+    len = 0;
+    try {
+        let { data: av } = await getVolunteer(page++, "All");
+        len = av.length;
+        activeVolunteers.push(...av);
+        while (len === 200) {
+            let { data: av1 } = await getVolunteer(page++, "All");
+            len = av1.length;
+            activeVolunteers.push(...av1);
+        }
+    } catch (e) {
+        console.log("Error in volunteer fetching");
+    }
+    // helplines
+    page = 1;
+    len = 0;
+    try {
+        let { data: hlp } = await getHelplines(page++, "All");
+        len = hlp.length;
+        helplines.push(...hlp);
+
+        while (len === 200) {
+            let { data: hlp1 } = await getHelplines(page++, "All");
+            len = hlp1.length;
+            helplines.push(...hlp1);
+        }
+    } catch (e) {
+        console.log("Error in helpline fetching");
     }
 
-    return tableStat;
+    console.log("Helplines are ",helplines)
+    return {
+        events: events,
+        activeVolunteers: activeVolunteers,
+        helplines: helplines,
+    };
 };

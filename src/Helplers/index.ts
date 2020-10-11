@@ -1,3 +1,4 @@
+import { start } from "repl";
 import { MONTH_END } from "../Constans";
 
 export const sleep = (ms:number) => {
@@ -8,7 +9,7 @@ export const sleep = (ms:number) => {
 // inputs 
 // Jan - Dec - [1 - 12] 0 - All Months
 // year = 0 means all years
-export const getDateRange = (month:number,year: number):string []=> {
+export const getDateRange = (month:number,year: number):number []=> {
 
     // start and end date for filter 
     let startDate: Array<string> = [],
@@ -34,5 +35,7 @@ export const getDateRange = (month:number,year: number):string []=> {
       endDate[1] = mon
       endDate[0] = MONTH_END[month-1].toString();
     }
-    return [startDate.join("-") , endDate.join("-")]
+    let sdTimestamp = new Date(startDate.reverse().join("-")).getTime()
+    let edTimestamp = new Date(endDate.reverse().join("-")).getTime()
+    return [sdTimestamp,edTimestamp]
 }

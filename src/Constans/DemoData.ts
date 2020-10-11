@@ -21,9 +21,8 @@ for (let i in CITIES_ARRAY) {
 export const CAMP_DATA_DEMO = CAMPDATA;
 
 export const getDemoVolunteerData = async (city?: string) => {
-    console.log("Fetching volunteer data");
     if (!city) return TEAMDATA;
-    await sleep(300);
+    // await sleep(300);
     return {
         code: 3000,
         data: TEAMDATA.data.filter((t) => t.BloodConnect_City === city),
@@ -32,14 +31,14 @@ export const getDemoVolunteerData = async (city?: string) => {
 
 export const getDemoCampData = async (city?: string) => {
     if (!city) return CAMPDATA;
-    await sleep(300);
+    // await sleep(300);
     return {
         code: 3000,
         data: CAMPDATA.data.filter((c) => c.BloodConnect_City === city),
     };
 };
 
-export const getDemoHelplineData = async (city?: string) => {
+export const getDemoHelplineData = async (city?: string):Promise<any> => {
     await sleep(300);
     if (!city) return HELPLINEDATA;
     return {

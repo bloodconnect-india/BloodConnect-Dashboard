@@ -4,5 +4,61 @@ export interface TableStatsType {
     helpline: number;
     donations: number;
     activeVolunteer: number;
-    city: string
+    city: string;
+}
+
+export interface Event {
+    BloodConnect_City: string;
+    Date_field: string;
+    City_Event: {
+        display_value: string;
+        ID: string;
+    };
+    "Organization_Details.Organization_Name": string;
+    "Post_Camp_ID.Number_of_Donation": string;
+    Camp_Coordinator: {
+        display_value: string;
+        ID: string;
+    };
+    ID: string;
+    TypeOfEvent: "Camp" | "Awareness";
+}
+
+export interface Team {
+    Status: string;
+    BloodConnect_City: string;
+    Email: string;
+    Alternate_contact_number: string;
+    ID: string;
+    Name: {
+        display_value: string;
+        prefix: string;
+        last_name: string;
+        suffix: string;
+        first_name: string;
+    };
+    Contact: string;
+}
+
+export interface Helpline {
+    Blood_Group_Required: string;
+    Status: string;
+    Auto_Number: number;
+    City_Region: {
+        display_value: string;
+        ID: string;
+    };
+    Your_Email: string;
+    Your_Name: string;
+    Contact_Number: string;
+    Type_of_Donation: string;
+    ID: string;
+    Hospital: string;
+    Patient_Name: string;
+    Added_Time: string;
+}
+
+export interface CreatorResponse<T> {
+    code: number;
+    data: T[];
 }
