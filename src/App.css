@@ -1,23 +1,33 @@
 .stat-card{
     background-color: #fff;
-    max-width: 250px;
-    height: 150px;
-    border-radius: 15px;
-    padding: 20px ;
+    max-width: 300px;
+    border-radius: 4px;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: felx-start;
+    align-items: center;
     cursor: pointer;
     margin: 20px auto;
+    box-shadow: 2px 3px 4px#ccc;
+    padding:20px 10px;
 }
 .card-heading{
     font-size: 16px;
+    color: #e46667;
+    margin-bottom: 0px;
 }
 .stat{
     font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 0px;
 }
 .stat-icon-container{
     display: flex;
     justify-content: center;
+    height: 50px;
+    width: 50px;
+    border-radius: 5px;
     align-items: center;
+    background-color:#fae5e5;
+    margin-right: 20px;
 }

@@ -1,7 +1,8 @@
-import { __IS_DEV__ } from "../Constans";
+import { __IS_DEV__ } from "../Constants";
 import {
-    getDemoHelplineData
-} from "../Constans/DemoData";
+    getDemoCampData,
+    getDemoHelplineData, getDemoVolunteerData
+} from "../Constants/DemoData";
 import {
     CreatorResponse,
 
@@ -14,27 +15,6 @@ declare global {
     interface Window {
         ZOHO: any;
     }
-}
-
-interface overall {
-    city: string;
-    donations: number;
-}
-interface API<Data> {
-    code: number;
-    data: Data[];
-}
-interface PostCamp {
-    Number_of_Donation: any;
-    Camp_Awareness: {
-        display_value: string;
-    };
-}
-
-interface MonthData {
-    city: string;
-    date: string;
-    donations: number;
 }
 
 const CREATOR = window.ZOHO.CREATOR;
@@ -66,10 +46,12 @@ const getVolunteer = (
     if (city !== "All") {
         criteria = `(Status=="Active" && BloodConnect_City=="${city}")`;
     }
-    // if (__IS_DEV__) {
-    //     if (city !== "All") return getDemoVolunteerData(city);
-    //     return getDemoVolunteerData();
-    // }
+    console.log(__IS_DEV__)
+    if (__IS_DEV__) {
+        console.log("Heya")
+        if (city !== "All") return getDemoVolunteerData(city);
+        return getDemoVolunteerData();
+    }
 
     let config = {
         reportName: "BloodConnect_Team_Report",
@@ -89,10 +71,10 @@ const getEvent = (
         criteria = `(BloodConnect_City=="${city}")`;
     }
 
-    // if (__IS_DEV__) {
-    //     if (city !== "All") return getDemoCampData(city);
-    //     return getDemoCampData();
-    // }
+    if (__IS_DEV__) {
+        if (city !== "All") return getDemoCampData(city);
+        return getDemoCampData();
+    }
     let config = {
         reportName: "Camp_Awareness_Report",
         criteria,
@@ -102,15 +84,6 @@ const getEvent = (
     return CREATOR.API.getAllRecords(config);
 };
 
-const getCity = (city: string) => {
-    let config = {
-        reportName: "Vlookup_Report",
-        criteria: `City=="${city}"`,
-        page: 1,
-        pageSize: "1",
-    };
-    return CREATOR.API.getAllRecords(config);
-};
 
 const getHelplines = (
     page: number,
@@ -135,33 +108,14 @@ const getHelplines = (
     return CREATOR.API.getAllRecords(config);
 };
 
-const getPostCamp = (page: number, city: string): Promise<API<PostCamp>> => {
-    let criteria = "";
-    if (city !== "All") {
-        criteria = `(BloodConnect_City=="${city}")`;
-    }
-    let config = {
-        reportName: "Post_Camp_Form_Report",
-        criteria: criteria,
-        page: page.toString(),
-        pageSize: "200",
-    };
-    return CREATOR.API.getAllRecords(config);
-    // return new Promise((resolve, reject) => {
-    //     let response = CREATOR.API.getAllRecords(config)
-    //     if (response)
-    //         resolve(response)
-    //     else
-    //         reject({ code: 500, data: []})
-    // })
-};
 // fetching all data at once to make the api calls less
 export const fetchAllData = async (): Promise<{
     events: Event[]| undefined;
     activeVolunteers: Team[] | undefined;
     helplines: Helpline[] | undefined;
 }> => {
-    await CREATOR.init();
+    if(!__IS_DEV__)
+        await CREATOR.init()
 
     let events: Event[] | undefined = [];
     let activeVolunteers: Team[] | undefined = [];
@@ -179,7 +133,7 @@ export const fetchAllData = async (): Promise<{
             len = data1.length;
         }
     } catch (e) {
-        console.log("Error in event fetching");
+        console.log("Error in event fetching",e);
     }
     // getting volunteer data
     page = 1;

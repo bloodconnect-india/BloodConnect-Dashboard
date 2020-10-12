@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { FiCalendar, FiUser, FiUsers } from "react-icons/fi";
+import { FiArrowUp } from "react-icons/fi";
 import Lottie from "react-lottie";
 import "./App.css";
+import HelplineChart from "./components/Chart/HelplineChart";
 import DonationCharts from "./components/Chart/MonthlyDonation";
 import MonthlyEventChart from "./components/Chart/MonthlyEventChart";
 import HelplineComponent from "./components/Helpline";
@@ -80,6 +81,7 @@ const App = () => {
                         e["Post_Camp_ID.Number_of_Donation"].length > 0
                             ? parseInt(e["Post_Camp_ID.Number_of_Donation"])
                             : 0;
+                    return 0;
                 });
             } else {
                 let myCamps = allEvents.filter(
@@ -106,6 +108,7 @@ const App = () => {
                     if (year === new Date().getFullYear()) {
                         monthCamp[mon - 1] += 1;
                     }
+                    return 0;
                 });
                 myAwareness.map((e) => {
                     let mon = parseInt(e.Date_field.split("-")[1]);
@@ -113,6 +116,7 @@ const App = () => {
                     if (year === new Date().getFullYear()) {
                         monthAwareness[mon - 1] += 1;
                     }
+                    return 0;
                 });
             }
         }
@@ -186,24 +190,24 @@ const App = () => {
             <div className="row">
                 <div className="col-lg-3">
                     <div
-                        className="stat-card "
+                        className="stat-card"
                         onClick={() => {
                             window.open(aVUrl, "_blank");
                         }}>
+                        
+                        <div className="stat-icon-container">
+                            <FiArrowUp size={34} color="#D20003" />
+                        </div>
                         {!isLoading ? (
                             <div>
                                 <p className="card-heading">
-                                    {" "}
                                     Active Volunteer
                                 </p>
-                                <p className="display-4">{aV}</p>
+                                <p className="stat">{aV}</p>
                             </div>
                         ) : (
                             <Loading loading={isLoading} />
                         )}
-                        <div className="stat-icon-container">
-                            <FiUser size={34} />
-                        </div>
                     </div>
                 </div>
 
@@ -213,17 +217,19 @@ const App = () => {
                         onClick={() => {
                             window.open(campUrl, "_blank");
                         }}>
+                        <div className="stat-icon-container">
+                            <FiArrowUp size={34} color="#D20003" />
+                        </div>
                         {!isLoading ? (
                             <div>
-                                <p className="card-heading"> Camps</p>
-                                <p className="display-4">{camps}</p>
+                                <p className="card-heading">
+                                    Camps
+                                </p>
+                                <p className="stat">{camps}</p>
                             </div>
                         ) : (
                             <Loading loading={isLoading} />
                         )}
-                        <div className="stat-icon-container">
-                            <FiCalendar size={34} />
-                        </div>
                     </div>
                 </div>
 
@@ -233,36 +239,37 @@ const App = () => {
                         onClick={() => {
                             window.open(awarenessUrl, "_blank");
                         }}>
+                        <div className="stat-icon-container">
+                            <FiArrowUp size={34} color="#D20003" />
+                        </div>
                         {!isLoading ? (
                             <div>
-                                <p className="card-heading"> Awareness</p>
-                                <p className="display-4">{awareness}</p>
+                                <p className="card-heading">
+                                    Awareness
+                                </p>
+                                <p className="stat">{awareness}</p>
                             </div>
                         ) : (
                             <Loading loading={isLoading} />
                         )}
-                        <div className="stat-icon-container">
-                            <FiCalendar size={34} />
-                        </div>
                     </div>
                 </div>
 
                 <div className="col-lg-3">
                     <div className="stat-card ">
+                        <div className="stat-icon-container">
+                            <FiArrowUp size={34} color="#D20003" />
+                        </div>
                         {!isLoading ? (
                             <div>
                                 <p className="card-heading">
-                                    {" "}
-                                    Toatal Donation{" "}
+                                    Donations
                                 </p>
-                                <p className="display-4">{donations}</p>
+                                <p className="stat">{donations}</p>
                             </div>
                         ) : (
                             <Loading loading={isLoading} />
                         )}
-                        <div className="stat-icon-container">
-                            <FiUsers size={34} />
-                        </div>
                     </div>
                 </div>
             </div>
@@ -277,6 +284,7 @@ const App = () => {
                 camp={monthlyCampData}
                 awareness={monthlyAwarenessData}
             />
+            <HelplineChart helplines={allHelplines} selectedCity={city} />
         </div>
     );
 };

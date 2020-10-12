@@ -50,7 +50,6 @@ const DonationCharts = ({ selectedCity, camps }: Props) => {
 
     const [chartData, setData] = useState<dataProps[]>(initial_data);
     const [city, setCity] = useState<string>(selectedCity);
-    const [loading, setLoading] = useState<boolean>(true);
     const [monthStatShown, showMonthStat] = useState<boolean>(false);
     const [allCamps, setCamps] = useState<Event[]>();
     // month details
@@ -98,7 +97,6 @@ const DonationCharts = ({ selectedCity, camps }: Props) => {
 
         
         
-        setLoading(false);
 
         // setting data for first chart
         setData((data) => {
@@ -130,7 +128,6 @@ const DonationCharts = ({ selectedCity, camps }: Props) => {
 
     useEffect(() => {
         if (!camps) return;
-        setLoading(true);
         filterData();
         //fetchYearData();
     }, [city, camps]);
@@ -267,7 +264,6 @@ const CampDonationChart = ({ back, data }): ReactElement => {
                     x: da.date.split("-")[0] + `(${da.city})`,
                 };
             });
-            let sorted = d.sort((a, b) => parseInt(a.date) - parseInt(b.date));
             setData(d);
         }
     }, [data]);

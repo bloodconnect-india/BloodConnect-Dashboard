@@ -3,6 +3,7 @@ export interface TableStatsType {
     awareness: number;
     helpline: number;
     donations: number;
+    helplineDonations:number;
     activeVolunteer: number;
     city: string;
 }
@@ -56,6 +57,7 @@ export interface Helpline {
     Hospital: string;
     Patient_Name: string;
     Added_Time: string;
+    "Helpline_Handler.Donor_Count": string;
 }
 
 export interface CreatorResponse<T> {

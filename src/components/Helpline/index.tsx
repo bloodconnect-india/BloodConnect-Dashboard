@@ -1,6 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-import { FiCalendar, FiUser, FiUsers } from "react-icons/fi";
+import { FiArrowUp } from "react-icons/fi";
 import Lottie from "react-lottie";
+import { CITIES_ARRAY, CITY_HELPLINE_CITIES } from "../../Constants";
 import { Helpline } from "../../Types";
 
 interface Props {
@@ -14,27 +16,44 @@ const HelplineComponent = ({ searchedCity, helplines }: Props) => {
     const [totalHelpline, setTotal] = useState(0);
     const [openHelpline, setOpen] = useState(0);
     const [closedHelpline, setClosed] = useState(0);
-    const [handlingHelpline, setHandling] = useState(0);
+    const [helplineDonations, setDonations] = useState(0);
 
     const filterData = () => {
         if (!helplines) return;
         let total = 0,
             open = 0,
             closed = 0,
-            handling = 0;
+            donations = 0;
         helplines.map((e) => {
-            if (city === "All" || e.City_Region.display_value === city) {
+            let currCity = e.City_Region.display_value;
+            if(city === "Consulting") {
+                if(!CITY_HELPLINE_CITIES["Delhi NCR"].includes(currCity) && !CITY_HELPLINE_CITIES.Odisha.includes(currCity) && !CITIES_ARRAY.includes(currCity)){
                 if (e.Status === "Open") open += 1;
-                else if (e.Status === "Closed") closed += 1;
-                else if (e.Status === "Handling") handling += 1;
+                else if (e.Status === "Closed"){
+                     closed += 1;
+                     if(e["Helpline_Handler.Donor_Count"]  && e["Helpline_Handler.Donor_Count"].length > 0)
+                     donations += parseInt(e["Helpline_Handler.Donor_Count"])
+                }
                 total += 1;
             }
+            }
+            else if (city === "All" || CITY_HELPLINE_CITIES[city].includes(currCity)) {
+                if (e.Status === "Open") open += 1;
+                else if (e.Status === "Closed"){
+                     closed += 1;
+                     if(e["Helpline_Handler.Donor_Count"]  && e["Helpline_Handler.Donor_Count"].length > 0)
+                     donations += parseInt(e["Helpline_Handler.Donor_Count"])
+                }
+                total += 1;
+                
+            }
+            return 0;
         });
 
         setOpen(open);
         setClosed(closed);
-        setHandling(handling);
         setTotal(total);
+        setDonations(donations)
         setLoading(false);
     };
 
@@ -67,69 +86,77 @@ const HelplineComponent = ({ searchedCity, helplines }: Props) => {
         );
     };
     return (
-        <div className="container">
-            <div className="row">
+        <div className="container mx-0 px-0">
+            <div className="row ">
                 <div className="col-lg-3">
                     <div className="stat-card ">
+                        <div className="stat-icon-container">
+                            <FiArrowUp size={34} color="#D20003" />
+                        </div>
                         {!isLoading ? (
                             <div>
-                                <p className="card-heading"> Total Requests</p>
-                                <p className="display-4">{totalHelpline}</p>
+                                <p className="card-heading">
+                                   Total Requests
+                                </p>
+                                <p className="stat">{totalHelpline}</p>
                             </div>
                         ) : (
                             <Loading />
                         )}
-                        <div className="stat-icon-container">
-                            <FiUser size={34} />
-                        </div>
                     </div>
                 </div>
 
                 <div className="col-lg-3">
                     <div className="stat-card ">
+                        <div className="stat-icon-container">
+                            <FiArrowUp size={34} color="#D20003" />
+                        </div>
                         {!isLoading ? (
                             <div>
-                                <p className="card-heading"> Open</p>
-                                <p className="display-4">{openHelpline}</p>
+                                <p className="card-heading">
+                                   Open
+                                </p>
+                                <p className="stat">{openHelpline}</p>
                             </div>
                         ) : (
                             <Loading />
                         )}
-                        <div className="stat-icon-container">
-                            <FiCalendar size={34} />
-                        </div>
                     </div>
                 </div>
 
                 <div className="col-lg-3">
                     <div className="stat-card ">
+                        <div className="stat-icon-container">
+                            <FiArrowUp size={34} color="#D20003" />
+                        </div>
                         {!isLoading ? (
                             <div>
-                                <p className="card-heading"> Closed</p>
-                                <p className="display-4">{closedHelpline}</p>
+                                <p className="card-heading">
+                                   Closed
+                                </p>
+                                <p className="stat">{closedHelpline}</p>
                             </div>
                         ) : (
                             <Loading />
                         )}
-                        <div className="stat-icon-container">
-                            <FiCalendar size={34} />
-                        </div>
                     </div>
                 </div>
 
                 <div className="col-lg-3">
                     <div className="stat-card ">
-                        {true ? (
+                        <div className="stat-icon-container">
+                            <FiArrowUp size={34} color="#D20003" />
+                        </div>
+                        {!isLoading ? (
                             <div>
-                                <p className="card-heading"> Handling </p>
-                                <p className="display-4">{handlingHelpline}</p>
+                                <p className="card-heading">
+                                   Donations
+                                </p>
+                                <p className="stat">{helplineDonations}</p>
                             </div>
                         ) : (
                             <Loading />
                         )}
-                        <div className="stat-icon-container">
-                            <FiUsers size={34} />
-                        </div>
                     </div>
                 </div>
             </div>
