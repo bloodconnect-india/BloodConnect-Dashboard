@@ -214,7 +214,7 @@ export default function StatTable({
                                 <span>Helpline</span>
                             </th>
                             <th>
-                                <span>Donations</span>
+                                <span>Donations(Camp+Helpline)</span>
                             </th>
                             <th>
                                 <span>Active Volunteer</span>
