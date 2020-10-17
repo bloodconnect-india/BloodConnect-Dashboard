@@ -280,11 +280,12 @@ const App = () => {
                 camps={allEvents?.filter((e) => e.TypeOfEvent === "Camp")}
                 selectedCity={city}
             />
+            <HelplineChart helplines={allHelplines} selectedCity={city} />
             <MonthlyEventChart
                 camp={monthlyCampData}
                 awareness={monthlyAwarenessData}
             />
-            <HelplineChart helplines={allHelplines} selectedCity={city} />
+            
         </div>
     );
 };
