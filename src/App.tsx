@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FiArrowUp } from "react-icons/fi";
 import Lottie from "react-lottie";
+import { exportComponentAsPDF } from "react-component-export-image";
 import "./App.css";
 import HelplineChart from "./components/Chart/HelplineChart";
 import DonationCharts from "./components/Chart/MonthlyDonation";
@@ -33,6 +34,7 @@ const App = () => {
     const [camps, setCamps] = useState(-1);
     const [awareness, setAwareness] = useState(-1);
     const [donations, setDonations] = useState(-1);
+    const ref = React.createRef<any>()
 
     // Monthly Datas
     // Donations data
@@ -181,14 +183,17 @@ const App = () => {
     }, [BASE_URL, city]);
 
     return (
-        <div className="container">
-            <div className="row justify-content-between ">
+        <div className="container" ref={ref}>
+            <div className="row justify-content-between align-items-center ">
                 <h4 className="stat col-lg-4 col-sm-12  mt-2 d-flex align-items-center justify-content-center">
                     {city === "All" ? "BloodConnect" : city}
                 </h4>
                 <Search handleChange={setSearch} />
+                <button className="download" onClick={() => {
+                    exportComponentAsPDF(ref)
+                }}>Download</button>
             </div>
-            <div className="row">
+            <div className="row" >
                 <div className="col-lg-3">
                     <div
                         className="stat-card"
