@@ -76,6 +76,7 @@ const App = () => {
                         if (e.TypeOfEvent === "Camp") monthCamp[mon - 1] += 1;
                         else monthAwareness[mon - 1] += 1;
                     }
+                    if(e.TypeOfEvent === "Camp")
                     donations +=
                         e["Post_Camp_ID.Number_of_Donation"] != null &&
                         e["Post_Camp_ID.Number_of_Donation"].length > 0
