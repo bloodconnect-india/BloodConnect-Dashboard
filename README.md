@@ -1,44 +1,53 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Dashboard
 
-## Available Scripts
+Dashboard widget built in react for Zoho creator.
 
-In the project directory, you can run:
+## Installation
 
-### `yarn start`
+Clone and install the required modules.
+```bash
+git clone https://github.com/bloodconnect-india/BloodConnect-Dashboard
+cd BloodConnect-Dashboard
+yarn 
+```
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Usage
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+ 1. In  src/Constant/index.ts
+ ```bash
+ change __IS_DEV__  to true // if using locally
+ ```
+ 2.  Start the project
+ ```bash
+ yarn start        // or npm start
+ ```
 
-### `yarn test`
+## Working
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+ The whole process is divided into a few steps : 
+ 1. Getting the data ( All the data is fetched in the App.tsx file and passed via props 
+     2. Formatting or filtering the data 
+     3. Rendering the data
 
-### `yarn build`
+#### 1. Getting the data 
+     The camp and volunteer data come from the Zoho )creator widget API][https://www.zoho.com/creator/newhelp/app-settings/widgets/creator-api-for-widgets.html)( and the helpline data comes from API][https://github.com/bloodconnect-india/api)( in this][https://github.com/bloodconnect-india/BloodConnect-Dashboard/blob/master/src/services/index.ts)( file. 
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+#### 2. Filtering/Formatting the data
+     Every file has a *filterData* function which filters data according to city or date filer as in the case of StatTable.
+      
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+### Publishing
+     Make sure you have make install in your system.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+     ``` bash
+     // change __IS__DEV__ to false
+     make build
+     vi docs/index.html 
+     // add these 2 lines in the head tag
+     <script type=text/javascript"" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+     <script type="text/javascript" src="https://js.zohostatic.com/creator/widgets/version/1.0/widgetsdk-min.js"></script>
 
-### `yarn eject`
+ ```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Contributing
+ Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
