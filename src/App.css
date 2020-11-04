@@ -31,3 +31,14 @@
     background-color:#fae5e5;
     margin-right: 20px;
 }
+.download{
+    height: 40px;
+    color: #fff;
+    border: 1px solid #e46667;
+    background-color: #D20003;
+    padding: 0px 25px;
+}
+.download:hover{
+    background-color: #e46667;
+    border: 1px solid #D20003;
+}

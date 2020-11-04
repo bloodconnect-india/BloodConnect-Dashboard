@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FiArrowUp } from "react-icons/fi";
 import Lottie from "react-lottie";
+import { exportComponentAsPDF } from "react-component-export-image";
 import "./App.css";
 import HelplineChart from "./components/Chart/HelplineChart";
 import DonationCharts from "./components/Chart/MonthlyDonation";
@@ -9,11 +10,11 @@ import HelplineComponent from "./components/Helpline";
 import Search from "./components/Search/Search";
 import StatTable from "./components/Table/StatTable";
 import { fetchAllData } from "./services/index";
-import { Event, Helpline, Team } from "./Types";
+import { Event, Team } from "./Types";
 
 const App = () => {
     let BASE_URL =
-        "https://app.zohocreator.in/deepak64/bloodconnect-india-donor-system";
+        "https://creatorapp.zoho.in/deepak64/bloodconnect-india-donor-system";
     if (
         window.location.ancestorOrigins &&
         window.location.ancestorOrigins[0] &&
@@ -23,16 +24,26 @@ const App = () => {
             BASE_URL = window.location.ancestorOrigins[0];
     }
 
+
+    // all camps and awareness
     const [allEvents, setEvents] = useState<Event[] | undefined>();
-    const [allHelplines, setHelplines] = useState<Helpline[] | undefined>();
+
+    // helplines
+    const [newHelplines, setNewHelplines] = useState<any | undefined>();
+    // active volunteers
     const [allVolunteer, setVolunteer] = useState<Team[] | undefined>();
 
+
+    // state variables for data count
     const [city, setCity] = useState("All");
     const [isLoading, setLoading] = useState(true);
     const [aV, setAV] = useState(-1);
     const [camps, setCamps] = useState(-1);
     const [awareness, setAwareness] = useState(-1);
     const [donations, setDonations] = useState(-1);
+
+    // reference 
+    const ref = React.createRef<any>()
 
     // Monthly Datas
     // Donations data
@@ -42,6 +53,8 @@ const App = () => {
     const [monthlyAwarenessData, setmonthlyAwarenessData] = useState(
         Array(12).fill(0)
     );
+
+    // url
     const [aVUrl, setaVUrl] = useState(
         `${BASE_URL}/#Report:BloodConnect_Team_Report?Status=Active`
     );
@@ -52,8 +65,9 @@ const App = () => {
         `${BASE_URL}/#Report:Camp_Awareness_Report?TypeOfEvent=Awareness`
     );
 
+
+    // filtering data based on city, called when city is changed or data is loaded
     const filterData = () => {
-        console.log("Filtering data", allEvents, allVolunteer);
         setLoading(true);
         let camps = 0,
             awareness = 0,
@@ -76,6 +90,7 @@ const App = () => {
                         if (e.TypeOfEvent === "Camp") monthCamp[mon - 1] += 1;
                         else monthAwareness[mon - 1] += 1;
                     }
+                    if(e.TypeOfEvent === "Camp")
                     donations +=
                         e["Post_Camp_ID.Number_of_Donation"] != null &&
                         e["Post_Camp_ID.Number_of_Donation"].length > 0
@@ -127,7 +142,6 @@ const App = () => {
                 volunteer = allVolunteer.filter(
                     (v) => v.BloodConnect_City === city
                 ).length;
-            console.log("volunteer filter complete", volunteer);
         }
 
         setCamps(camps);
@@ -139,15 +153,17 @@ const App = () => {
         setLoading(false);
         return;
     };
+
+    // loading data from backend
     const loadData = async () => {
-        const { events, helplines, activeVolunteers } = await fetchAllData();
+        const { events, activeVolunteers, newHelpline } = await fetchAllData();
         setEvents((e) => events);
-        setHelplines((e) => helplines);
         setVolunteer((e) => activeVolunteers);
+        setNewHelplines((e) => newHelpline)
     };
 
+    // calling filter when data is loaded
     useEffect(() => {
-        //loadAllData();
         if (!!allEvents && !!allVolunteer) filterData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [city, allEvents, allVolunteer]);
@@ -158,6 +174,8 @@ const App = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+
+    // setting city 
     const setSearch = (c: string): void => {
         if (c !== city) {
             setLoading(true);
@@ -165,6 +183,8 @@ const App = () => {
         }
     };
 
+
+    // setting url when city is changed
     useEffect(() => {
         if (city !== "All") {
             setaVUrl(
@@ -180,14 +200,17 @@ const App = () => {
     }, [BASE_URL, city]);
 
     return (
-        <div className="container">
-            <div className="row justify-content-between ">
+        <div className="container" ref={ref}>
+            <div className="row justify-content-between align-items-center ">
                 <h4 className="stat col-lg-4 col-sm-12  mt-2 d-flex align-items-center justify-content-center">
                     {city === "All" ? "BloodConnect" : city}
                 </h4>
                 <Search handleChange={setSearch} />
+                <button className="download" onClick={() => {
+                    exportComponentAsPDF(ref)
+                }}>Download</button>
             </div>
-            <div className="row">
+            <div className="row" >
                 <div className="col-lg-3">
                     <div
                         className="stat-card"
@@ -274,13 +297,13 @@ const App = () => {
                 </div>
             </div>
 
-             <HelplineComponent helplines={allHelplines} searchedCity={city} /> 
-            <StatTable events={allEvents} allHelplines={allHelplines} av={allVolunteer} />
+             <HelplineComponent newHelplines={newHelplines}  searchedCity={city} /> 
+            <StatTable events={allEvents} newHelplines={newHelplines} av={allVolunteer} />
             <DonationCharts
                 camps={allEvents?.filter((e) => e.TypeOfEvent === "Camp")}
                 selectedCity={city}
             />
-            <HelplineChart helplines={allHelplines} selectedCity={city} />
+            <HelplineChart newHelplines={newHelplines} selectedCity={city} />
             <MonthlyEventChart
                 camp={monthlyCampData}
                 awareness={monthlyAwarenessData}
@@ -290,6 +313,7 @@ const App = () => {
     );
 };
 
+// loading component
 export const Loading = ({ loading }) => {
     return (
         <div>

@@ -2,15 +2,14 @@
 import React, { useEffect, useState } from "react";
 import { FiArrowUp } from "react-icons/fi";
 import Lottie from "react-lottie";
-import { CITIES_ARRAY, CITY_HELPLINE_CITIES } from "../../Constants";
-import { Helpline } from "../../Types";
+import { CITIES_ARRAY } from "../../Constants";
 
 interface Props {
     searchedCity: string;
-    helplines: Helpline[] | undefined;
+    newHelplines: any | undefined;
 }
 
-const HelplineComponent = ({ searchedCity, helplines }: Props) => {
+const HelplineComponent = ({ searchedCity , newHelplines }: Props) => {
     const [city, setCity] = useState<string>("All");
     const [isLoading, setLoading] = useState<boolean>(true);
     const [totalHelpline, setTotal] = useState(0);
@@ -19,36 +18,44 @@ const HelplineComponent = ({ searchedCity, helplines }: Props) => {
     const [helplineDonations, setDonations] = useState(0);
 
     const filterData = () => {
-        if (!helplines) return;
+        if(!newHelplines) return;
         let total = 0,
             open = 0,
             closed = 0,
             donations = 0;
-        helplines.map((e) => {
-            let currCity = e.City_Region.display_value;
-            if(city === "Consulting") {
-                if(!CITY_HELPLINE_CITIES["Delhi NCR"].includes(currCity) && !CITY_HELPLINE_CITIES.Odisha.includes(currCity) && !CITIES_ARRAY.includes(currCity)){
-                if (e.Status === "Open") open += 1;
-                else if (e.Status === "Closed"){
-                     closed += 1;
-                     if(e["Helpline_Handler.Donor_Count"]  && e["Helpline_Handler.Donor_Count"].length > 0)
-                     donations += parseInt(e["Helpline_Handler.Donor_Count"])
-                }
-                total += 1;
+
+        if(city !== "All") {
+            open = newHelplines[city].open;
+            closed = newHelplines[city].closed;
+            total = newHelplines[city].total;
+            for(let year in newHelplines[city].detail) {
+                // eslint-disable-next-line no-loop-func
+                newHelplines[city].detail[year].map((h:any) => {
+                    if(h.donations) {
+                        donations += parseInt(h.donations)
+                    }
+                    return 0;
+                })
             }
-            }
-            else if (city === "All" || CITY_HELPLINE_CITIES[city].includes(currCity)) {
-                if (e.Status === "Open") open += 1;
-                else if (e.Status === "Closed"){
-                     closed += 1;
-                     if(e["Helpline_Handler.Donor_Count"]  && e["Helpline_Handler.Donor_Count"].length > 0)
-                     donations += parseInt(e["Helpline_Handler.Donor_Count"])
-                }
-                total += 1;
+        } else {
+            for(let i in CITIES_ARRAY) {
+                let currCity = CITIES_ARRAY[i];
                 
+                open += parseInt(newHelplines[currCity].open);
+                closed += parseInt(newHelplines[currCity].closed);
+                total += parseInt(newHelplines[currCity].total); 
+                for(let year in newHelplines[currCity].detail) {
+                // eslint-disable-next-line no-loop-func
+                newHelplines[currCity].detail[year].map((h:any) => {
+                    if(h.donations) {
+                        donations += parseInt(h.donations)
+                    }
+                    return 0;
+                })
             }
-            return 0;
-        });
+            }
+        }
+
 
         setOpen(open);
         setClosed(closed);
@@ -65,9 +72,9 @@ const HelplineComponent = ({ searchedCity, helplines }: Props) => {
 
     useEffect(() => {
         setLoading(true);
-        if (helplines) filterData();
+        if (newHelplines) filterData();
         // fetchData();
-    }, [city, helplines]);
+    }, [city, newHelplines]);
 
     const Loading = () => {
         return (

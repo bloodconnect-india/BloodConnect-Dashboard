@@ -4,7 +4,7 @@ const SCRIPT_REGEX = /<div id="root"><\/div>(.*)<\/body>/
 const CSS_REGEX = /<\/title>(.*)<\/head>/
 
 const builtFilePath = './build/index.html'
-const appFilePath = './app/index.html'
+const appFilePath = './docs/index.html'
 const fs = require('fs')
 
 const htmlData = fs.readFileSync(builtFilePath).toString()
@@ -39,6 +39,6 @@ processedAppHTML = processedAppHTML.replace(/^[\s]+$/gm, '').replace(/[\n]+/g, '
 
 fs.writeFileSync(appFilePath, processedAppHTML)
 const filename = `index-v${(Math.random() * 100).toFixed(0)}.html`
-const newAppHTMLPath = `./app/${filename}`
+const newAppHTMLPath = `./docs/${filename}`
 fs.writeFileSync(newAppHTMLPath, processedAppHTML)
 console.log(`Widget path: /${filename}`)

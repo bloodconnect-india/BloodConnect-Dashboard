@@ -1,16 +1,11 @@
 import { __IS_DEV__ } from "../Constants";
 import {
-    getDemoCampData,
-    getDemoHelplineData, getDemoVolunteerData
+    getDemoCampData, getDemoVolunteerData
 } from "../Constants/DemoData";
 import {
     CreatorResponse,
-
-    Event,
-
-    Helpline, Team
+    Event, Team
 } from "../Types";
-
 declare global {
     interface Window {
         ZOHO: any;
@@ -48,7 +43,6 @@ const getVolunteer = (
     }
     console.log(__IS_DEV__)
     if (__IS_DEV__) {
-        console.log("Heya")
         if (city !== "All") return getDemoVolunteerData(city);
         return getDemoVolunteerData();
     }
@@ -85,41 +79,18 @@ const getEvent = (
 };
 
 
-const getHelplines = (
-    page: number,
-    city: string
-): Promise<CreatorResponse<Helpline>> => {
-    let criteria = "";
-    if (city !== "All" && city !== "Consulting") {
-        criteria = `(City_Region==${city})`;
-    }
-
-    if (__IS_DEV__) {
-        if (city !== "All") return getDemoHelplineData(city);
-        return getDemoHelplineData();
-    }
-
-    let config = {
-        reportName: "Helpline_Report",
-        criteria,
-        page: page.toString(),
-        pageSize: "200",
-    };
-    return CREATOR.API.getAllRecords(config);
-};
 
 // fetching all data at once to make the api calls less
 export const fetchAllData = async (): Promise<{
     events: Event[]| undefined;
     activeVolunteers: Team[] | undefined;
-    helplines: Helpline[] | undefined;
+    newHelpline : any
 }> => {
     if(!__IS_DEV__)
         await CREATOR.init()
 
     let events: Event[] | undefined = [];
     let activeVolunteers: Team[] | undefined = [];
-    let helplines: Helpline[] | undefined = [];
     let len = 0;
     let page = 1;
     try {
@@ -150,27 +121,13 @@ export const fetchAllData = async (): Promise<{
     } catch (e) {
         console.log("Error in volunteer fetching");
     }
-    // helplines
-    page = 1;
-    len = 0;
-    try {
-        let { data: hlp } = await getHelplines(page++, "All");
-        len = hlp.length;
-        helplines.push(...hlp);
-
-        while (len === 200) {
-            let { data: hlp1 } = await getHelplines(page++, "All");
-            len = hlp1.length;
-            helplines.push(...hlp1);
-        }
-    } catch (e) {
-        console.log("Error in helpline fetching");
-    }
-
-    console.log("Helplines are ",helplines)
+    
+    let newHelpline = await fetch("https://bc-api2.herokuapp.com/get-helplines")
+    let jsonData = await newHelpline.json();
+    console.log("data is ",jsonData.data)
     return {
         events: events,
         activeVolunteers: activeVolunteers,
-        helplines: helplines,
+        newHelpline:jsonData.data
     };
 };
