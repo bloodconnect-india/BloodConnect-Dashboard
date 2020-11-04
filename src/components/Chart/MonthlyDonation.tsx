@@ -107,17 +107,14 @@ const DonationCharts = ({ selectedCity, camps }: Props) => {
                 return d;
             });
         });
-        console.log(monthData)
         setMonthStat(monthData);
     };
 
     const handleClick = (i: number) => {
         if (monthStat && monthStat[i]) {
-            console.log("Setting current month stat", monthStat[i])
             setCurrMonthStat(c => monthStat[i]);
         }
         showMonthStat(true);
-        console.log("Done setting current month stat");
     };
 
     useEffect(() => {

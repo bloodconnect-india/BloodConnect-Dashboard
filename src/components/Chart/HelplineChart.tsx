@@ -1,14 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { ReactElement, useLayoutEffect, useRef, useState } from "react";
 import { useEffect } from "react";
-import { Helpline } from "../../Types";
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
-import { CITIES_ARRAY, CITY_HELPLINE_CITIES, MONTH } from "../../Constants";
+import { CITIES_ARRAY, MONTH } from "../../Constants";
 
 interface Props {
-    helplines: Helpline[] | undefined;
+    newHelplines:any | undefined;
     selectedCity: string;
 }
 
@@ -20,14 +19,16 @@ interface ChartData {
 
 am4core.useTheme(am4themes_animated);
 export default function HelplineChart({
-    helplines,
     selectedCity,
+    newHelplines
 }: Props): ReactElement {
     const chart = useRef<am4charts.XYChart | null>(null);
     const [city, setCity] = useState<string>(selectedCity);
 
+
+    // structuring helpline data for chart
     const filterData = () => {
-        if (!helplines || !chart.current) return;
+        if (!chart.current || !newHelplines) return;
         let data: ChartData[] = [];
         for (let i in MONTH) {
             data.push({
@@ -36,46 +37,31 @@ export default function HelplineChart({
                 helplines: 0,
             });
         }
-        helplines.map((h) => {
-            
-            let mon = parseInt(h.Added_Time.split(" ")[0].split("-")[1]);
-            let currCity = h.City_Region.display_value;
-            if (city === "All") {
-                let currDonations = h["Helpline_Handler.Donor_Count"];
-                data[mon - 1].donations +=
-                    currDonations && currDonations.length > 0
-                        ? parseInt(currDonations)
-                        : 0;
-                data[mon - 1].helplines += 1;
-                data[mon - 1].month = MONTH[mon - 1];
-            } else if (city === "Consulting") {
-                if (
-                    !CITY_HELPLINE_CITIES["Delhi NCR"].includes(currCity) &&
-                    !CITY_HELPLINE_CITIES.Odisha.includes(currCity) &&
-                    !CITIES_ARRAY.includes(currCity)
-                ) {
-                    let currDonations = h["Helpline_Handler.Donor_Count"];
-                    data[mon - 1].donations +=
-                        currDonations && currDonations.length > 0
-                            ? parseInt(currDonations)
-                            : 0;
-                    data[mon - 1].helplines += 1;
-                    data[mon - 1].month = MONTH[mon - 1];
-                }
-            } else {
-                if (CITY_HELPLINE_CITIES[city].includes(currCity)) {
-                    let currDonations = h["Helpline_Handler.Donor_Count"];
-                    data[mon - 1].donations +=
-                        currDonations && currDonations.length > 0
-                            ? parseInt(currDonations)
-                            : 0;
-                    data[mon - 1].helplines += 1;
-                    data[mon - 1].month = MONTH[mon - 1];
-                }
+
+        let year = new Date().getFullYear()
+        if(city !== "All") {
+            if(!newHelplines[city]) return;
+            newHelplines[city].detail[year].map((h,i) => {
+                data[i].donations = h.donations ? h.donations: 0;
+                data[i].helplines = h.helplines ? h.helplines: 0;
+                return 0;
+            })
+
+        } else {
+            for(let i in CITIES_ARRAY) {
+                let currCity  = CITIES_ARRAY[i];
+                if(!newHelplines[currCity]) return;
+            newHelplines[currCity].detail[year].map((h,i) => {
+                data[i].donations += h.donations ? parseInt(h.donations): 0;
+                data[i].helplines += h.helplines ? parseInt(h.helplines) : 0;
+                return 0;
+            })
+                
             }
-            return 0;
-        });
-        console.log(data);
+        }
+
+       
+        
         chart.current.data = data;
     };
 
@@ -83,11 +69,12 @@ export default function HelplineChart({
         if (selectedCity && selectedCity !== city) setCity(selectedCity);
     }, [selectedCity]);
 
+    /* for charts , for data change above */
     useLayoutEffect(() => {
-        if (city && helplines) {
+        if (city && newHelplines) {
             filterData();
         }
-    }, [city, helplines]);
+    }, [city, newHelplines]);
 
     useLayoutEffect(() => {
         let x = am4core.create("chartdiv", am4charts.XYChart);

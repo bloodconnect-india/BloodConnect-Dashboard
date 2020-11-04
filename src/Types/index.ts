@@ -41,24 +41,6 @@ export interface Team {
     Contact: string;
 }
 
-export interface Helpline {
-    Blood_Group_Required: string;
-    Status: string;
-    Auto_Number: number;
-    City_Region: {
-        display_value: string;
-        ID: string;
-    };
-    Your_Email: string;
-    Your_Name: string;
-    Contact_Number: string;
-    Type_of_Donation: string;
-    ID: string;
-    Hospital: string;
-    Patient_Name: string;
-    Added_Time: string;
-    "Helpline_Handler.Donor_Count": string;
-}
 
 export interface CreatorResponse<T> {
     code: number;
