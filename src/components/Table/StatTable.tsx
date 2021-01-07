@@ -24,7 +24,7 @@ export default function StatTable({
   const [year, setYear] = useState<number>(0);
 
   // you want to change this to automatic 
-  const yearArray = [2020, 2019];
+  const yearArray = [2021,2020, 2019];
 
   let totalCamps = 0,
     totalAwareness = 0,

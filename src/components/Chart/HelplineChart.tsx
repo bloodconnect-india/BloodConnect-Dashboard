@@ -7,7 +7,7 @@ import am4themes_animated from "@amcharts/amcharts4/themes/animated";
 import { CITIES_ARRAY, MONTH } from "../../Constants";
 
 interface Props {
-    newHelplines:any | undefined;
+    newHelplines: any | undefined;
     selectedCity: string;
 }
 
@@ -20,11 +20,10 @@ interface ChartData {
 am4core.useTheme(am4themes_animated);
 export default function HelplineChart({
     selectedCity,
-    newHelplines
+    newHelplines,
 }: Props): ReactElement {
     const chart = useRef<am4charts.XYChart | null>(null);
     const [city, setCity] = useState<string>(selectedCity);
-
 
     // structuring helpline data for chart
     const filterData = () => {
@@ -38,30 +37,30 @@ export default function HelplineChart({
             });
         }
 
-        let year = new Date().getFullYear()
-        if(city !== "All") {
-            if(!newHelplines[city]) return;
-            newHelplines[city].detail[year].map((h,i) => {
-                data[i].donations = h.donations ? h.donations: 0;
-                data[i].helplines = h.helplines ? h.helplines: 0;
+        let year = new Date().getFullYear();
+        if (city !== "All") {
+            if (!newHelplines[city]) return;
+            newHelplines[city].detail[year].map((h, i) => {
+                data[i].donations = h.donations ? h.donations : 0;
+                data[i].helplines = h.helplines ? h.helplines : 0;
                 return 0;
-            })
-
+            });
         } else {
-            for(let i in CITIES_ARRAY) {
-                let currCity  = CITIES_ARRAY[i];
-                if(!newHelplines[currCity]) return;
-            newHelplines[currCity].detail[year].map((h,i) => {
-                data[i].donations += h.donations ? parseInt(h.donations): 0;
-                data[i].helplines += h.helplines ? parseInt(h.helplines) : 0;
-                return 0;
-            })
-                
+            for (let i in CITIES_ARRAY) {
+                let currCity = CITIES_ARRAY[i];
+                if (!newHelplines[currCity] || !newHelplines[currCity].detail[year]) continue;
+                newHelplines[currCity].detail[year].map((h, i) => {
+                    data[i].donations += h.donations
+                        ? parseInt(h.donations)
+                        : 0;
+                    data[i].helplines += h.helplines
+                        ? parseInt(h.helplines)
+                        : 0;
+                    return 0;
+                });
             }
         }
 
-       
-        
         chart.current.data = data;
     };
 
@@ -145,7 +144,6 @@ export default function HelplineChart({
         let scrollbarX = new am4charts.XYChartScrollbar();
         x.cursor = new am4charts.XYCursor();
         scrollbarX.series.push(series);
-        
 
         x.legend = new am4charts.Legend();
         chart.current = x;
@@ -159,7 +157,7 @@ export default function HelplineChart({
         <div
             className="container mx-0 px-0"
             style={{ backgroundColor: "#ffffff" }}>
-                <h6 className="px-4 pt-4">Monthly Helpline Data </h6>
+            <h6 className="px-4 pt-4">Monthly Helpline Data </h6>
             <div id="chartdiv" style={{ width: "100%", height: "500px" }}></div>
         </div>
     );
